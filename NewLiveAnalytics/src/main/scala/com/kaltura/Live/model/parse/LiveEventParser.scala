@@ -125,8 +125,16 @@ object LiveEventParser extends Serializable with MetaLog[BaseLog]
                          if (event.bufferTime < 0)
                               event.bufferTime = 0
 
-                         if (paramsMap.contains("event:bitrate"))
-                              event.bitrate = paramsMap("event:bitrate").toLong
+                         if (paramsMap.contains("event:bitrate")) {
+                              try {
+                                   event.bitrate = paramsMap("event:bitrate").toLong
+                              } catch {
+                                   case e: Exception => {
+                                        logger.warn("event bitrate is not a numeric value, ignore bitrate data" + line)
+                                        event.bitrate = -1
+                                   }
+                              }
+                         }
 
                          if (paramsMap.contains("event:referrer"))
                               event.referrer = paramsMap("event:referrer")
